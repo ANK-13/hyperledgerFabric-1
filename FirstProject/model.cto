@@ -1,0 +1,61 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Defines a data model for a blind vehicle auction
+ */
+namespace org.acme.tender
+
+abstract participant Member identified by bid {
+  o String bid
+  o String Name
+  o String Proof
+}
+
+participant Bidder extends Member {
+  o Double balance
+  o String[] tenders optional
+}
+
+participant BidSupplyer extends Member {
+}
+
+enum TenderState {
+  o OPEN
+  o CLOSED
+  o WAIT
+  o CLOSING
+}
+
+asset TenderListing identified by listingId {
+  o String listingId
+  o Double reservePrice
+  o String description
+  o TenderState state
+  o Bid[] offers optional
+  --> BidSupplyer supplyer
+  --> Bidder bidder optional
+}
+
+
+transaction Bid {
+  o Double bidPrice
+  o String DocOneProof
+  --> TenderListing tListing
+  --> Bidder bidder
+}
+
+transaction CloseBidding {
+  --> TenderListing tListing
+}
